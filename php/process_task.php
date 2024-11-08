@@ -9,6 +9,7 @@ try {
     $titulo = trim($_POST['titulo']);
     $descripcion = trim($_POST['descripcion']) ?? '';
     $fecha_ejecucion = $_POST['fecha_ejecucion'];
+    $hora_ejecucion = $_POST['hora_ejecucion'];
     $prioridad_id = (int)$_POST['prioridad_id'];
     $importante = isset($_POST['importante']) ? 1 : 0;
     $categoria_id = (int)$_POST['categoria_id'];
@@ -18,8 +19,8 @@ try {
     error_log("Datos recopilados: " . print_r($_POST, true));
 
     // Inserta en la tabla actividad
-    $query = "INSERT INTO actividad (titulo, descripcion, fecha_ejecucion, prioridad_id, importante, estado_id, usuario_id) 
-              VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO actividad (titulo, descripcion, fecha_ejecucion, hora_ejecucion, prioridad_id, importante, estado_id, usuario_id) 
+              VALUES (?, ?, ?, ?,?, ?, ?, ?)";
     
     error_log("Query: " . $query);
     $stmt = $conexion->prepare($query);
@@ -29,10 +30,11 @@ try {
     }
 
     error_log("Bind parameters: " );
-    $stmt->bind_param("sssiiii", 
+    $stmt->bind_param("ssssiiii", 
         $titulo, 
         $descripcion, 
         $fecha_ejecucion,
+        $hora_ejecucion,
         $prioridad_id,
         $importante,
         $estado_id,

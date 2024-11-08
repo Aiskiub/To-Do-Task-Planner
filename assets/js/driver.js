@@ -10,7 +10,7 @@ function initializeDriver() {
                 element: "#sidebar",
                 popover: {
                     title: "Barra Lateral",
-                    description: "Aquí puedes acceder a las principales funciones.",
+                    description: "Aquí puedes acceder a las principales funciones, cerrar sesion y ver tus tareas filtradas.",
                     side: "left",
                     align: "start"
                 }
@@ -25,10 +25,19 @@ function initializeDriver() {
                 }
             },
             {
-                element: "#info-task",
+                element: "#myDay",
                 popover: {
-                    title: "Informacion tarea",
-                    description: "Aqui podras ver mas detalles de la tarea.",
+                    title: "Ver las tareas del dia",
+                    description: "Aqui podras ver tus tareas del dia.",
+                    side: "bottom",
+                    align: "start"
+                }
+            },
+            {
+                element: "#next7Days",
+                popover: {
+                    title: "Ver las tareas de los proximos 7 dias",
+                    description: "Aqui podras ver tus tareas de los proximos 7 dias.",
                     side: "bottom",
                     align: "start"
                 }
@@ -43,10 +52,10 @@ function initializeDriver() {
                 }
             },
             {
-                element: "#lista",
+                element: "#myCalendar",
                 popover: {
-                    title: "Listas",
-                    description: "Esta son tus listas de tareas personales, trabajo o listas de compras.",
+                    title: "Aqui tienes tu calendario",
+                    description: "Aqui podras ver tus tareas en el calendario (proximamente).",
                     side: "right",
                     align: "start"
                 }
@@ -54,9 +63,9 @@ function initializeDriver() {
             {
                 element: "#tags",
                 popover: {
-                    title: "Etiquetas",
-                    description: "Usa las etiquetas para organizar tus tareas.",
-                    side: "top",
+                    title: "Categorias",
+                    description: "Usa las categorias para organizar tus tareas.",
+                    side: "right",
                     align: "start"
                 }
             },
@@ -66,6 +75,33 @@ function initializeDriver() {
                     title: "Añadir Tarea",
                     description: "Haz clic aquí para añadir una nueva tarea.",
                     side: "bottom",
+                    align: "start"
+                }
+            },
+            {
+                element: "#searchInput",
+                popover: {
+                    title: "Buscador",
+                    description: "Busca tus tareas por nombre.",
+                    side: "right",
+                    align: "start"
+                }
+            },
+            {
+                element: "#taskColumns",
+                popover: {
+                    title: "Aqui estan tus tareas separadas por columnas",
+                    description: "Las columnas son: Asignadas, En progreso y Completadas.",
+                    side: "right",
+                    align: "start"
+                }
+            },
+            {
+                element: "#taskInfoSection",
+                popover: {
+                    title: "Aqui puedes ver mas informacion de la tarea",
+                    description: "Selecciona una tarea para ver mas informacion.",
+                    side: "right",
                     align: "start"
                 }
             }

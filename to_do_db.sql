@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 08, 2024 at 07:16 AM
+-- Generation Time: Nov 08, 2024 at 06:05 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `to_do_db`
 --
-CREATE DATABASE IF NOT EXISTS `to_do_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `to_do_db`;
 
 -- --------------------------------------------------------
 
@@ -34,11 +32,24 @@ CREATE TABLE `actividad` (
   `titulo` varchar(100) NOT NULL,
   `descripcion` text DEFAULT NULL,
   `fecha_ejecucion` date DEFAULT NULL,
+  `hora_ejecucion` time(6) DEFAULT NULL,
   `prioridad_id` int(11) DEFAULT NULL,
   `estado_id` int(11) DEFAULT NULL,
   `importante` tinyint(1) DEFAULT 0,
   `usuario_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `actividad`
+--
+
+INSERT INTO `actividad` (`id`, `titulo`, `descripcion`, `fecha_ejecucion`, `hora_ejecucion`, `prioridad_id`, `estado_id`, `importante`, `usuario_id`) VALUES
+(9, 'Cocaina', 'consumir', '2024-11-15', '00:00:00.000000', 1, 1, 1, 2),
+(10, 'Chupar penes', 'Lo que me encanta', '2024-11-10', '00:00:00.000000', 1, 1, 1, 3),
+(11, 'Meter Visio', 'eta vaina es seria goku', '2024-12-20', '14:20:00.000000', 1, 1, 0, 3),
+(12, 'Prostitutas', 'negras', '2024-12-24', '00:35:00.000000', 1, 1, 0, 3),
+(13, 'dasdas', 'gtg', '2024-11-09', '12:00:00.000000', 1, 1, 1, 3),
+(14, 'Ser millonario', 'billullo', '2024-11-15', '12:00:00.000000', 2, 1, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -51,6 +62,14 @@ CREATE TABLE `actividad_categoria` (
   `categoria_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `actividad_categoria`
+--
+
+INSERT INTO `actividad_categoria` (`actividad_id`, `categoria_id`) VALUES
+(13, 5),
+(14, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -61,6 +80,20 @@ CREATE TABLE `categoria` (
   `id` int(11) NOT NULL,
   `nombre` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `categoria`
+--
+
+INSERT INTO `categoria` (`id`, `nombre`) VALUES
+(1, 'Personal'),
+(2, 'Work'),
+(3, 'Shopping'),
+(4, 'Health'),
+(5, 'Education'),
+(6, 'Family'),
+(7, 'Projects'),
+(8, 'Diversión');
 
 -- --------------------------------------------------------
 
@@ -73,6 +106,15 @@ CREATE TABLE `estado` (
   `nombre` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `estado`
+--
+
+INSERT INTO `estado` (`id`, `nombre`) VALUES
+(1, 'Pendiente'),
+(2, 'En Progreso'),
+(3, 'Completado');
+
 -- --------------------------------------------------------
 
 --
@@ -84,6 +126,15 @@ CREATE TABLE `prioridad` (
   `nivel` varchar(50) NOT NULL,
   `color` varchar(7) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `prioridad`
+--
+
+INSERT INTO `prioridad` (`id`, `nivel`, `color`) VALUES
+(1, 'Baja', '#28a745'),
+(2, 'Media', '#ffc107'),
+(3, 'Alta', '#dc3545');
 
 -- --------------------------------------------------------
 
@@ -100,6 +151,15 @@ CREATE TABLE `usuario` (
   `tipodocumento` enum('CEDULA','PASAPORTE') NOT NULL,
   `documento` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `usuario`
+--
+
+INSERT INTO `usuario` (`id`, `nombre`, `apellido`, `correo`, `telefono`, `tipodocumento`, `documento`) VALUES
+(1, 'Daniel', 'Lopez', 'danilq139@gmail.com', '11111111', 'CEDULA', '1089098501'),
+(2, 'Julian', 'Vasquez', 'minai@gg.com', '0000', 'CEDULA', '1088240743'),
+(3, 'Samuel', 'Acevedo', 's.a@gmail.com', '313', 'CEDULA', '14567');
 
 --
 -- Indexes for dumped tables
@@ -155,31 +215,31 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT for table `actividad`
 --
 ALTER TABLE `actividad`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `categoria`
 --
 ALTER TABLE `categoria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `estado`
 --
 ALTER TABLE `estado`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `prioridad`
 --
 ALTER TABLE `prioridad`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables

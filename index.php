@@ -21,35 +21,34 @@ if (!isset($_SESSION['usuario_id'])) {
     <div class="container">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
-            <h2>Daniel</h2>
-            <p>Free Plan</p>
-            <nav>
-                <ul>
-                    <li id="myDay"><a href="#"><i class="fas fa-sun"></i> My Day</a></li>
-                    <li id="next7Days"><a href="#"><i class="fas fa-calendar"></i> Next 7 Days</a></li>
-                    <li id="allMyTasks"><a href="#"><i class="fas fa-list"></i> All My Tasks</a></li>
-                    <li id="myCalendar"><a href="#"><i class="fas fa-calendar-alt"></i> My Calendar (Beta)</a></li>
-                </ul>
-            </nav>
-            <h3>Lists</h3>
-            <ul id="lista">
-                <li id="personal-list"><a href="#"><span class="bullet personal-bullet"></span> Personal</a></li>
-                <li id="workList"><a href="#"><span class="bullet work-bullet"></span> Work</a></li>
-                <li id="groceryList"><a href="#"><span class="bullet grocery-bullet"></span> Grocery List</a></li>
-            </ul>
-            <h3>Tags</h3>
-            <div id="tags">
-                <span class="tag tag-important">Important</span>
-                <span class="tag tag-project">Project</span>
-                <span class="tag tag-personal">Personal</span>
-            </div>
-            <div class="Login-button">
+            <h2 class="Login-button">
             <?php if(isset($_SESSION['nombre'])): ?>
                 <span>Bienvenido, <?php echo htmlspecialchars($_SESSION['nombre']); ?> | </span>
                 <a href="php/cerrar_sesion.php">Cerrar Sesión</a>
             <?php else: ?>
                 <a href="login.php" class="login-button">Iniciar Sesión</a>
             <?php endif; ?>
+        </h2>
+            <p>Free Plan</p>
+            <nav>
+                <div class="nav-item" id="myDay">
+                    <i class="fas fa-sun"></i> My Day
+                </div>
+                <div class="nav-item" id="next7Days">
+                    <i class="fas fa-calendar"></i> Next 7 Days
+                </div>
+                <div class="nav-item" id="allMyTasks">
+                    <i class="fas fa-list"></i> All My Tasks
+                </div>
+                <div class="nav-item" id="myCalendar">
+                    <i class="fas fa-calendar-alt"></i> My Calendar (Beta)
+                </div>
+            </nav>
+            <h3>Categories</h3>
+            <div id="tags">
+                <?php
+                include 'php/obtener_categorias_tags.php';
+                ?>
             </div>
 
             <button class="start-tour-btn"><i onclick="initializeDriver()" class="fa-solid fa-circle-info"></i></button>
@@ -67,100 +66,196 @@ if (!isset($_SESSION['usuario_id'])) {
                 <div>
                     <input type="text" id="searchInput" placeholder="Search tasks..." class="search-input">
                 </div>
-                <div class="task-list" id="taskList">
-                    <?php
-                    include 'php/obtener_tareas.php';
-                    $tareas = obtenerTareas($_SESSION['usuario_id']);
-                    
-                    foreach($tareas as $tarea): ?>
-                        <div class="task-item">
-                            <input type="checkbox" class="task-checkbox" 
-                                   data-id="<?php echo $tarea['id']; ?>"
-                                   <?php echo ($tarea['estado_id'] == 2) ? 'checked' : ''; ?>>
+                
+                <!-- Añadimos las columnas manteniendo la estructura existente -->
+                <div class="task-columns" id="taskColumns">
+                    <div class="task-column">
+                        <h3>Assigned</h3>
+                        <div class="task-list" id="assignedList" data-status="1">
+                            <?php
+                            include 'php/obtener_tareas.php';
+                            $tareas = obtenerTareas($_SESSION['usuario_id']);
                             
-                            <span class="task-title <?php echo ($tarea['estado_id'] == 2) ? 'completed' : ''; ?>">
-                                <?php echo htmlspecialchars($tarea['titulo']); ?>
-                            </span>
-                            
-                            <div class="task-actions">
-                                <?php if($tarea['importante']): ?>
-                                    <i class="fas fa-star task-star active"></i>
-                                <?php else: ?>
-                                    <i class="fas fa-star task-star"></i>
-                                <?php endif; ?>
-                                
-                                <?php if($tarea['prioridad_id'] == 1): ?>
-                                    <i class="fas fa-flag text-danger"></i>
-                                <?php endif; ?>
-                                
-                                <button class="btn-delete" onclick="eliminarTarea(<?php echo $tarea['id']; ?>)">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </div>
+                            foreach($tareas as $tarea):
+                                if($tarea['estado_id'] == 1): ?>
+                                    <div class="task-item" draggable="true" data-id="<?php echo $tarea['id']; ?>">
+                                        <span class="task-title">
+                                            <?php echo htmlspecialchars($tarea['titulo']); ?>
+                                        </span>
+                                        
+                                        <div class="task-actions">
+                                            <?php if($tarea['importante']): ?>
+                                                <i class="fas fa-star task-star active"></i>
+                                            <?php else: ?>
+                                                <i class="fas fa-star task-star"></i>
+                                            <?php endif; ?>
+                                            
+                                            <?php if($tarea['prioridad_id'] == 1): ?>
+                                                <i class="fas fa-flag text-danger"></i>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                            <?php endif; endforeach; ?>
                         </div>
-                    <?php endforeach; ?>
+                    </div>
+                    
+                    <div class="task-column">
+                        <h3>In Progress</h3>
+                        <div class="task-list" id="inProgressList" data-status="2">
+                            <?php
+                            foreach($tareas as $tarea):
+                                if($tarea['estado_id'] == 2): ?>
+                                    <div class="task-item" draggable="true" data-id="<?php echo $tarea['id']; ?>">
+                                        <span class="task-title">
+                                            <?php echo htmlspecialchars($tarea['titulo']); ?>
+                                        </span>
+                                        
+                                        <div class="task-actions">
+                                            <?php if($tarea['importante']): ?>
+                                                <i class="fas fa-star task-star active"></i>
+                                            <?php else: ?>
+                                                <i class="fas fa-star task-star"></i>
+                                            <?php endif; ?>
+                                            
+                                            <?php if($tarea['prioridad_id'] == 1): ?>
+                                                <i class="fas fa-flag text-danger"></i>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                            <?php endif; endforeach; ?>
+                        </div>
+                    </div>
+                    
+                    <div class="task-column">
+                        <h3>Completed</h3>
+                        <div class="task-list" id="completedList" data-status="3">
+                            <?php
+                            foreach($tareas as $tarea):
+                                if($tarea['estado_id'] == 3): ?>
+                                    <div class="task-item" draggable="true" data-id="<?php echo $tarea['id']; ?>">
+                                        <span class="task-title">
+                                            <?php echo htmlspecialchars($tarea['titulo']); ?>
+                                        </span>
+                                        
+                                        <div class="task-actions">
+                                            <?php if($tarea['importante']): ?>
+                                                <i class="fas fa-star task-star active"></i>
+                                            <?php else: ?>
+                                                <i class="fas fa-star task-star"></i>
+                                            <?php endif; ?>
+                                            
+                                            <?php if($tarea['prioridad_id'] == 1): ?>
+                                                <i class="fas fa-flag text-danger"></i>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                            <?php endif; endforeach; ?>
+                        </div>
+                    </div>
                 </div>
             </div>
-        
-            <div class="task-info-section" id="info-task">
+            
+            <div class="task-info-section" id="taskInfoSection">
                 <h2>Task Information</h2>
-                <div id="taskDetails">
-                    <p>Select a task to see details here</p>
+                <div id="taskDetails" class="task-details">
+                    <p class="no-task-selected">Select a task to see details here</p>
+                </div>
+                
+                <!-- Template for task details (inicialmente oculto) -->
+                <div id="taskDetailsTemplate" class="task-details-content" style="display: none;">
+                    <h3 class="task-title"></h3>
+                    
+                    <div class="detail-group">
+                        <label>Description</label>
+                        <p class="task-description"></p>
+                    </div>
+                    
+                    <div class="detail-group">
+                        <label>Due Date</label>
+                        <p class="task-date"></p>
+                    </div>
+                    
+                    <div class="detail-group">
+                        <label>Priority</label>
+                        <p class="task-priority"></p>
+                    </div>
+                    
+                    <div class="detail-group">
+                        <label>Category</label>
+                        <p class="task-category"></p>
+                    </div>
+                    
+                    <div class="detail-group">
+                        <label>Status</label>
+                        <p class="task-status"></p>
+                    </div>
+                    
+                    <div class="task-actions">
+                        <button class="btn-edit" onclick="editarTarea(this.dataset.taskId)">
+                            <i class="fas fa-edit"></i> Edit Task
+                        </button>
+                        <button class="btn-delete" onclick="confirmarEliminarTarea(this.dataset.taskId)">
+                            <i class="fas fa-trash-alt"></i> Delete Task
+                        </button>
+                    </div>
                 </div>
             </div>
         </main>
 
         <div id="taskModal" class="modal">
     <div class="modal-content">
-        <h3>Add New Task</h3>
-        <form action="php/process_task.php" method="post">
+        <h3>Nueva Tarea</h3>
+        <form id="taskForm">
             <div class="form-group">
-                <input type="text" name="titulo" id="newTaskInput" placeholder="Task title" required>
+                <label for="titulo">Título</label>
+                <input type="text" id="titulo" name="titulo" required>
             </div>
 
             <div class="form-group">
-                <label for="descripcion">Description</label>
-                <textarea name="descripcion" id="descripcion" placeholder="Task description"></textarea>
+                <label for="descripcion">Descripción</label>
+                <textarea id="descripcion" name="descripcion"></textarea>
             </div>
 
             <div class="form-group">
-                <label for="dueDateSelect">Due Date</label>
-                <select name="dueDateSelect" id="dueDateSelect">
-                    <option value="today">Today</option>
-                    <option value="tomorrow">Tomorrow</option>
-                    <option value="nextWeek">Next Week</option>
-                    <option value="custom">Custom Date</option>
+                <label for="dueDateSelect">Fecha</label>
+                <select id="dueDateSelect" name="dueDateSelect">
+                    <option value="today">Hoy</option>
+                    <option value="tomorrow">Mañana</option>
+                    <option value="nextWeek">Próxima semana</option>
+                    <option value="custom">Personalizada</option>
                 </select>
-                <input type="date" id="customDateInput" style="display: none;">
+                
+                <input type="date" id="customDateInput" name="fecha_ejecucion" style="display: none;">
+                <input type="time" id="customTimeInput" name="hora_ejecucion" style="display: none;">
             </div>
 
             <div class="form-group">
-                <label for="prioridad_id">Priority</label>
-                <select name="prioridad_id" id="prioridad_id">
-                    <option value="1">High</option>
-                    <option value="2">Medium</option>
-                    <option value="3">Low</option>
+                <label for="prioridad_id">Prioridad</label>
+                <select id="prioridad_id" name="prioridad_id">
+                    <option value="1">Alta</option>
+                    <option value="2">Media</option>
+                    <option value="3">Baja</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="categoria_id">Categoría</label>
+                <select id="categoria_id" name="categoria_id">
+                    <?php include 'php/read_categorias.php'; ?>
                 </select>
             </div>
 
             <div class="form-group">
                 <label>
-                    <input type="checkbox" name="importante" id="importante">
-                    Important
+                    <input type="checkbox" id="importante" name="importante">
+                    Marcar como importante
                 </label>
             </div>
 
-            <div class="form-group">
-                <label for="categoria_id">Category</label>
-                <select name="categoria_id" id="categoria_id">
-                    <option value="">Select a category</option>
-                    <option value="1">Personal</option>
-                    <option value="2">Work</option>
-                    <option value="3">Shopping</option>
-                </select>
+            <div class="form-actions">
+                <button type="submit" class="btn-save">Guardar</button>
+                <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
             </div>
-
-            <button type="submit" class="save-task-btn">Save Task</button>
         </form>
     </div>
 </div>
@@ -173,5 +268,11 @@ if (!isset($_SESSION['usuario_id'])) {
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script><!--  -->
     <script src="./assets/js/driver.js"></script>
     <script src="./assets/js/tasks.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded');
+            setupDragAndDrop();
+        });
+    </script>
 </body>
 </html>
