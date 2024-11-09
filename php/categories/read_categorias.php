@@ -1,6 +1,5 @@
 <?php
-
-    include("../conexion_db.php");
+require_once dirname(dirname(__FILE__)) . '/config/conexion_db.php';
 
     $sql = "SELECT id, nombre FROM categoria ORDER BY nombre ASC";
     $result = $conexion->query($sql);

@@ -26,14 +26,14 @@
             <!-- Formulario de Login y Register -->
             <div class="contenedor_login-register">
                 <!-- Login -->
-                <form action="php/ingreso_usuario.php" method="POST" class="formulario_login">
+                <form action="php/auth/ingreso_usuario.php" method="POST" class="formulario_login">
                     <h2>Iniciar Sesión</h2>
                     <input type="correo" placeholder="Correo Electrónico" name="correo">
                     <input type="text" placeholder="Documento" name="documento">
                     <button>Entrar</button>
                 </form>
                 <!-- Register -->
-                <form action="php/registro_usuario_db.php" method="POST" class="formulario_register">
+                <form action="php/auth/registro_usuario_db.php" method="POST" class="formulario_register">
                     <h2>Registrarse</h2>
                     <input type="text" placeholder="Nombre" name="nombre">
                     <input type="text" placeholder="Apellido" name="apellido">

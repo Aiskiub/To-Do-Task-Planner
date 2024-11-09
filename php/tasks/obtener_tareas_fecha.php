@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../conexion_db.php';
+require_once dirname(dirname(__FILE__)) . '/config/conexion_db.php';
 
 if (!isset($_SESSION['usuario_id'])) {
     header('Content-Type: application/json');

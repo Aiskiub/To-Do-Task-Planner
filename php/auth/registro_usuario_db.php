@@ -5,7 +5,7 @@
 </head>
 <body>
 <?php
-    include '../conexion_db.php';
+    include '../config/conexion_db.php';
 
     // Verificar si los datos han sido enviados por el formulario
     $nombre = isset($_POST['nombre']) ? mysqli_real_escape_string($conexion, $_POST['nombre']) : '';
@@ -34,7 +34,7 @@
                     timer: 3000,
                     showConfirmButton: false
                 }).then(function() {
-                    window.location = '../index.php'; // Redirige a una página de éxito, si lo deseas
+                    window.location = '../../index.php'; // Redirige a una página de éxito, si lo deseas
                 });
             </script>
             <?php

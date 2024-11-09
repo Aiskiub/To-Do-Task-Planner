@@ -1,4 +1,5 @@
 <?php
+require_once 'php/config/config.php';
 session_start();
 // Verifica si el usuario está autenticado
 if (!isset($_SESSION['usuario_id'])) {
@@ -24,7 +25,7 @@ if (!isset($_SESSION['usuario_id'])) {
             <h2 class="Login-button">
             <?php if(isset($_SESSION['nombre'])): ?>
                 <span>Bienvenido, <?php echo htmlspecialchars($_SESSION['nombre']); ?> | </span>
-                <a href="php/cerrar_sesion.php">Cerrar Sesión</a>
+                <a href="php/auth/cerrar_sesion.php">Cerrar Sesión</a>
             <?php else: ?>
                 <a href="login.php" class="login-button">Iniciar Sesión</a>
             <?php endif; ?>
@@ -47,7 +48,7 @@ if (!isset($_SESSION['usuario_id'])) {
             <h3>Categories</h3>
             <div id="tags">
                 <?php
-                include 'php/obtener_categorias_tags.php';
+                include 'php/categories/obtener_categorias_tags.php';
                 ?>
             </div>
 
@@ -73,7 +74,7 @@ if (!isset($_SESSION['usuario_id'])) {
                         <h3>Assigned</h3>
                         <div class="task-list" id="assignedList" data-status="1">
                             <?php
-                            include 'php/obtener_tareas.php';
+                            include 'php/tasks/obtener_tareas.php';
                             $tareas = obtenerTareas($_SESSION['usuario_id']);
                             
                             foreach($tareas as $tarea):
@@ -213,7 +214,7 @@ if (!isset($_SESSION['usuario_id'])) {
 
             <div class="form-group">
                 <label for="descripcion">Descripción</label>
-                <textarea id="descripcion" name="descripcion"></textarea>
+                <input type="text" id="descripcion" name="descripcion">
             </div>
 
             <div class="form-group">
@@ -241,7 +242,7 @@ if (!isset($_SESSION['usuario_id'])) {
             <div class="form-group">
                 <label for="categoria_id">Categoría</label>
                 <select id="categoria_id" name="categoria_id">
-                    <?php include 'php/read_categorias.php'; ?>
+                    <?php include 'php/categories/read_categorias.php'; ?>
                 </select>
             </div>
 

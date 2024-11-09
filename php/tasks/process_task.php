@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../conexion_db.php';
+require_once dirname(dirname(__FILE__)) . '/config/conexion_db.php';
 
 try {
     error_log("Iniciando proceso de nueva actividad para usuario ID: " . $_SESSION['usuario_id']);
@@ -71,13 +71,21 @@ try {
 
     error_log("Categoría asignada con éxito. ID: " . $stmt_categoria->insert_id);
 
-    $_SESSION['mensaje'] = "Actividad guardada exitosamente";
-    header('Location: ../index.php');
+    // En lugar de redireccionar, devolver JSON
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => true,
+        'message' => 'Actividad guardada exitosamente',
+        'task_id' => $actividad_id
+    ]);
     exit;
 
 } catch (Exception $e) {
-    $_SESSION['error'] = "Error: " . $e->getMessage();
-    header('Location: ../index.php');
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage()
+    ]);
     exit;
 }
 ?>

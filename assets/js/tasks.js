@@ -23,25 +23,17 @@ document.addEventListener('DOMContentLoaded', function() {
     taskForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        const isEdit = this.getAttribute('data-mode') === 'edit';
-        const taskId = this.getAttribute('data-task-id');
-        
-        // Crear FormData con los datos del formulario
         const formData = new FormData(this);
+        const isEdit = this.getAttribute('data-mode') === 'edit';
         
-        // Si es edición, añadir el ID de la tarea
-        if (isEdit) {
-            formData.append('id', taskId);
-        }
-        
-        // Procesar la fecha según la selección
+        // Procesar fecha y tiempo
         const dueDateSelect = document.getElementById('dueDateSelect');
         const customDateInput = document.getElementById('customDateInput');
         const customTimeInput = document.getElementById('customTimeInput');
         
         let finalDate = '';
         let finalTime = '';
-
+        
         switch(dueDateSelect.value) {
             case 'today':
                 finalDate = new Date().toISOString().split('T')[0];
@@ -64,22 +56,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 finalTime = customTimeInput.value || '12:00';
                 break;
         }
-
+        
         formData.append('fecha_ejecucion', finalDate);
         formData.append('hora_ejecucion', finalTime);
         
-        // Enviar al endpoint correspondiente
-        const url = isEdit ? 'php/actualizar_tarea.php' : 'php/process_task.php';
+        const url = isEdit ? './php/tasks/actualizar_tarea.php' : './php/tasks/process_task.php';
         
         fetch(url, {
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 // Cerrar el modal
-                document.getElementById('taskModal').style.display = 'none';
+                const modal = document.getElementById('taskModal');
+                modal.style.display = 'none';
+                
+                // Limpiar el formulario
+                taskForm.reset();
                 
                 // Recargar las tareas
                 const selectedCategory = document.querySelector('#tags .tag.selected')?.dataset.id;
@@ -88,20 +88,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     cargarTodasLasTareas();
                 }
-                
-                // Resetear el formulario
-                taskForm.reset();
-                taskForm.removeAttribute('data-mode');
-                taskForm.removeAttribute('data-task-id');
-                
-                // Restaurar el texto del botón
-                const saveButton = document.querySelector('#taskModal button[type="submit"]');
-                if (saveButton) {
-                    saveButton.textContent = 'Guardar Tarea';
-                }
+            } else {
+                throw new Error(data.error || 'Error al guardar la tarea');
             }
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al guardar la tarea: ' + error.message);
+        });
     });
 
     // Actualizar la función para mostrar/ocultar los campos personalizados
@@ -172,13 +166,19 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function buscarTareas(searchTerm, categoriaId = null) {
-    let url = `php/buscar_tareas.php?search=${encodeURIComponent(searchTerm)}`;
+    // Corregir la ruta del endpoint de búsqueda
+    let url = `./php/search/buscar_tareas.php?search=${encodeURIComponent(searchTerm)}`;
     if (categoriaId) {
         url += `&categoria_id=${categoriaId}`;
     }
     
     fetch(url)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(tareas => {
             actualizarListaTareas(tareas);
             // Añadir mensaje si no hay resultados
@@ -195,7 +195,7 @@ function buscarTareas(searchTerm, categoriaId = null) {
 }
 
 function cargarTodasLasTareas() {
-    fetch('php/obtener_todas_tareas.php')
+    fetch('./php/tasks/obtener_todas_tareas.php')
         .then(response => response.json())
         .then(tareas => {
             actualizarListaTareas(tareas);
@@ -213,7 +213,7 @@ function cargarTodasLasTareas() {
 }
 
 function cargarTareasPorCategoria(categoriaId) {
-    fetch(`php/obtener_tareas_categoria.php?categoria_id=${categoriaId}`)
+    fetch(`./php/tasks/obtener_tareas_categoria.php?categoria_id=${categoriaId}`)
         .then(response => response.json())
         .then(tareas => {
             actualizarListaTareas(tareas);
@@ -344,7 +344,7 @@ function getClosestTask(container, mouseY) {
 function actualizarEstadoTarea(taskId, newStatus) {
     console.log('Actualizando tarea:', taskId, 'a estado:', newStatus);
     
-    fetch('php/actualizar_estado_tarea.php', {
+    fetch('./php/tasks/actualizar_estado_tarea.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -369,7 +369,8 @@ function eliminarTarea(taskId) {
         taskElement.style.transform = 'scale(0.8)';
     }
 
-    fetch('php/eliminar_tarea.php', {
+    // Corregir la ruta del endpoint
+    fetch('./php/tasks/eliminar_tarea.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -409,7 +410,7 @@ function setupTaskDetails() {
 }
 
 function mostrarDetallesTarea(taskId) {
-    fetch(`php/obtener_detalles_tarea.php?id=${taskId}`)
+    fetch(`./php/tasks/obtener_detalles_tarea.php?id=${taskId}`)
         .then(response => response.json())
         .then(tarea => {
             const taskDetails = document.getElementById('taskDetails');
@@ -583,12 +584,19 @@ function closeModal() {
     const modal = document.getElementById('taskModal');
     if (modal) {
         modal.style.display = 'none';
-        // Resetear el formulario
+        
+        // Limpiar el formulario
         const form = document.getElementById('taskForm');
         if (form) {
             form.reset();
             form.removeAttribute('data-mode');
             form.removeAttribute('data-task-id');
+        }
+        
+        // Restaurar el texto del botón
+        const saveButton = modal.querySelector('button[type="submit"]');
+        if (saveButton) {
+            saveButton.textContent = 'Guardar Tarea';
         }
     }
 }
@@ -600,11 +608,11 @@ function confirmarEliminarTarea(taskId) {
 }
 
 function cargarTareasPorFecha(filtro) {
-    console.log('Cargando tareas con filtro:', filtro); // Para debugging
-    fetch(`php/obtener_tareas_fecha.php?filtro=${filtro}`)
+    console.log('Cargando tareas con filtro:', filtro);
+    fetch(`./php/tasks/obtener_tareas_fecha.php?filtro=${filtro}`)
         .then(response => response.json())
         .then(tareas => {
-            console.log('Tareas filtradas recibidas:', tareas); // Para debugging
+            console.log('Tareas recibidas:', tareas);
             actualizarListaTareas(tareas);
             const titles = {
                 'today': 'My Day',

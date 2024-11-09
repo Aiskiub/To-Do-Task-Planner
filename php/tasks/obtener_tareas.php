@@ -1,5 +1,5 @@
 <?php
-include dirname(__FILE__) . '/../conexion_db.php';
+require_once dirname(dirname(__FILE__)) . '/config/conexion_db.php';
 
 function obtenerTareas($usuario_id) {
     global $conexion;

@@ -5,7 +5,7 @@
 </head>
 <body>
 <?php
-    include '../conexion_db.php';
+    include '../config/conexion_db.php';
     
         $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
         $documento = mysqli_real_escape_string($conexion, $_POST['documento']);
@@ -31,7 +31,7 @@
                         timer: 2000,
                         showConfirmButton: false
                     }).then(function() {
-                        window.location = '../index.php';
+                        window.location = '../../index.php';
                     });
                 </script>
                 <?php
@@ -43,7 +43,7 @@
                         title: 'Error',
                         text: 'Correo o documento incorrectos'
                     }).then(function() {
-                        window.location = '../login.php';
+                        window.location = '../../login.php';
                     });
                 </script>
                 <?php
@@ -56,7 +56,7 @@
                     title: 'Campos incompletos',
                     text: 'Por favor, complete todos los campos'
                 }).then(function() {
-                    window.location = '../index.php';
+                    window.location = '../../index.php';
                 });
             </script>
             <?php
