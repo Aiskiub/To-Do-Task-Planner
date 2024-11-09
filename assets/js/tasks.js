@@ -25,6 +25,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const formData = new FormData(this);
         const isEdit = this.getAttribute('data-mode') === 'edit';
+        const taskId = this.getAttribute('data-task-id');
+        
+        // Si es edición, añadir el ID de la tarea al FormData
+        if (isEdit && taskId) {
+            formData.append('id', taskId);
+            console.log('Editando tarea:', taskId); // Debug
+        }
         
         // Procesar fecha y tiempo
         const dueDateSelect = document.getElementById('dueDateSelect');
@@ -62,24 +69,31 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const url = isEdit ? './php/tasks/actualizar_tarea.php' : './php/tasks/process_task.php';
         
+        // Debug: mostrar datos que se envían
+        console.log('Enviando datos:', {
+            url: url,
+            isEdit: isEdit,
+            taskId: taskId,
+            fecha: finalDate,
+            hora: finalTime
+        });
+        
         fetch(url, {
             method: 'POST',
             body: formData
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                return response.text().then(text => {
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+                });
             }
             return response.json();
         })
         .then(data => {
             if (data.success) {
                 // Cerrar el modal
-                const modal = document.getElementById('taskModal');
-                modal.style.display = 'none';
-                
-                // Limpiar el formulario
-                taskForm.reset();
+                closeModal();
                 
                 // Recargar las tareas
                 const selectedCategory = document.querySelector('#tags .tag.selected')?.dataset.id;
@@ -93,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Error completo:', error);
             alert('Error al guardar la tarea: ' + error.message);
         });
     });
@@ -523,13 +537,22 @@ function editarTarea(taskId) {
         return;
     }
 
-    // Obtener los detalles de la tarea
-    fetch(`php/obtener_detalles_tarea.php?id=${taskId}`)
-        .then(response => response.json())
+    // Corregir la ruta para obtener detalles de la tarea
+    fetch(`./php/tasks/obtener_detalles_tarea.php?id=${taskId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(tarea => {
-            console.log('Datos de la tarea:', tarea); // Para debug
+            console.log('Datos de la tarea:', tarea);
 
-            // Verificar cada elemento antes de asignar valores
+            // Actualizar el título del modal primero
+            const modalTitle = modal.querySelector('h3');
+            if (modalTitle) modalTitle.textContent = 'Editar Tarea';
+
+            // Llenar el formulario con los datos
             const titulo = document.getElementById('titulo');
             if (titulo) titulo.value = tarea.titulo || '';
 
@@ -565,17 +588,16 @@ function editarTarea(taskId) {
             taskForm.setAttribute('data-mode', 'edit');
             taskForm.setAttribute('data-task-id', taskId);
 
-            // Actualizar el título del modal
-            const modalTitle = modal.querySelector('h3');
-            if (modalTitle) modalTitle.textContent = 'Editar Tarea';
-
             // Actualizar el texto del botón
-            const saveButton = modal.querySelector('.btn-save');
-            if (saveButton) saveButton.textContent = 'Actualizar Tarea';
+            const saveButton = modal.querySelector('button[type="submit"]');
+            if (saveButton) {
+                saveButton.textContent = 'Actualizar Tarea';
+            }
         })
         .catch(error => {
             console.error('Error al cargar los detalles de la tarea:', error);
-            modal.style.display = 'none';
+            alert('Error al cargar los detalles de la tarea. Por favor, intente nuevamente.');
+            // No cerrar el modal en caso de error
         });
 }
 
