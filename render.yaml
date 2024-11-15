@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: todo-task-planner
+    env: php
+    buildCommand: composer install
+    startCommand: heroku-php-apache2
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: todo_db
+          property: connectionString
+
+databases:
+  - name: todo_db
+    databaseName: to_do_db
+    user: root
+    plan: free 
