@@ -7,10 +7,12 @@
 <?php
     include '../config/conexion_db.php';
     
-    // Asegurarse de que la sesión está iniciada
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+    // Iniciar sesión al principio del script
+    session_start();
+
+    // Agregar logs para debug
+    error_log("Iniciando proceso de login");
+    error_log("POST data: " . print_r($_POST, true));
 
     try {
         $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
@@ -26,7 +28,7 @@
             if ($resultado->num_rows == 1) {
                 $usuario = $resultado->fetch_assoc();
                 
-                // Limpiar cualquier sesión existente
+                // Limpiar y reiniciar la sesión
                 session_unset();
                 session_destroy();
                 session_start();
@@ -35,66 +37,32 @@
                 $_SESSION['usuario_id'] = $usuario['id'];
                 $_SESSION['nombre'] = $usuario['nombre'];
                 
-                // Forzar la escritura de la sesión
+                // Forzar escritura de sesión
                 session_write_close();
-                session_start();
                 
-                // Verificar que las variables de sesión se establecieron
                 error_log("Login exitoso - Session ID: " . session_id());
                 error_log("Login exitoso - Usuario ID: " . $_SESSION['usuario_id']);
                 error_log("Login exitoso - Nombre: " . $_SESSION['nombre']);
 
-                ?>
-                <script>
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Bienvenido!',
-                        text: 'Inicio de sesión exitoso',
-                        timer: 2000,
-                        showConfirmButton: false
-                    }).then(function() {
-                        window.location = '../../index.php';
-                    });
-                </script>
-                <?php
+                // Redirigir usando JavaScript después de asegurarnos que la sesión está establecida
+                echo "<script>
+                    window.location.href = '../../index.php';
+                </script>";
+                exit();
             } else {
-                ?>
-                <script>
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Correo o documento incorrectos'
-                    }).then(function() {
-                        window.location = '../../login.php';
-                    });
-                </script>
-                <?php
+                error_log("Login fallido - Credenciales incorrectas");
+                echo "<script>
+                    alert('Credenciales incorrectas');
+                    window.location.href = '../../login.php';
+                </script>";
             }
-        } else {
-            ?>
-            <script>
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Campos incompletos',
-                    text: 'Por favor, complete todos los campos'
-                }).then(function() {
-                    window.location = '../../index.php';
-                });
-            </script>
-            <?php
         }
     } catch (Exception $e) {
-        ?>
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Ha ocurrido un error al iniciar sesión'
-            }).then(function() {
-                window.location = '../../login.php';
-            });
-        </script>
-        <?php
+        error_log("Error en login: " . $e->getMessage());
+        echo "<script>
+            alert('Error en el proceso de login');
+            window.location.href = '../../login.php';
+        </script>";
     }
 ?>
 </body>
