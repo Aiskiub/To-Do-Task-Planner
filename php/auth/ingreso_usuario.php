@@ -44,25 +44,57 @@
                 error_log("Login exitoso - Usuario ID: " . $_SESSION['usuario_id']);
                 error_log("Login exitoso - Nombre: " . $_SESSION['nombre']);
 
-                // Redirigir usando JavaScript después de asegurarnos que la sesión está establecida
-                echo "<script>
-                    window.location.href = '../../index.php';
-                </script>";
-                exit();
+                ?>
+                <script>
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Bienvenido!',
+                        text: 'Inicio de sesión exitoso',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(function() {
+                        window.location = '../../index.php';
+                    });
+                </script>
+                <?php
             } else {
-                error_log("Login fallido - Credenciales incorrectas");
-                echo "<script>
-                    alert('Credenciales incorrectas');
-                    window.location.href = '../../login.php';
-                </script>";
+                ?>
+                <script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Correo o documento incorrectos'
+                    }).then(function() {
+                        window.location = '../../login.php';
+                    });
+                </script>
+                <?php
             }
+        } else {
+            ?>
+            <script>
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Campos incompletos',
+                    text: 'Por favor, complete todos los campos'
+                }).then(function() {
+                    window.location = '../../index.php';
+                });
+            </script>
+            <?php
         }
     } catch (Exception $e) {
-        error_log("Error en login: " . $e->getMessage());
-        echo "<script>
-            alert('Error en el proceso de login');
-            window.location.href = '../../login.php';
-        </script>";
+        ?>
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ha ocurrido un error al iniciar sesión'
+            }).then(function() {
+                window.location = '../../login.php';
+            });
+        </script>
+        <?php
     }
 ?>
 </body>

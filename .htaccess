@@ -9,10 +9,4 @@ php_value error_reporting E_ALL
 php_value session.cookie_secure On
 php_value session.cookie_httponly On
 php_value session.cookie_samesite "Lax"
-php_value session.gc_maxlifetime 1440
-php_flag session.use_strict_mode On
-
-# Permitir acceso a la sesión
-<IfModule mod_headers.c>
-    Header set Set-Cookie HttpOnly;Secure
-</IfModule>
+php_value session.gc_maxlifetime 1440 
