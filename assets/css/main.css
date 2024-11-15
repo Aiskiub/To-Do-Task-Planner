@@ -167,11 +167,25 @@ a {
 .task-item {
     display: flex;
     align-items: center;
-    background-color: #212730;
-    padding: 1rem;
-    border-radius: 0.5rem;
+    background-color: #2D3748;
     margin-bottom: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    cursor: grab;
+    user-select: none;
+    transition: all 0.2s ease;
 }
+
+.task-item:active {
+    cursor: grabbing;
+}
+
+.task-item.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+    cursor: grabbing;
+}
+
 .task-item button {
     background: none;
     border: none;
@@ -271,18 +285,19 @@ a {
     margin-bottom: 0.5rem;
     padding: 0.75rem;
     border-radius: 0.375rem;
-    cursor: move;
+    cursor: grab;
     user-select: none;
     transition: all 0.2s ease;
 }
 
-.task-item:hover {
-    background-color: #374151;
+.task-item:active {
+    cursor: grabbing;
 }
 
 .task-item.dragging {
     opacity: 0.5;
     transform: scale(0.95);
+    cursor: grabbing;
 }
 
 /* Zona de eliminación flotante */
