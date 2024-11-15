@@ -7,22 +7,16 @@
 <?php
     include '../config/conexion_db.php';
     
-    // Asegurar que la sesión está iniciada
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+    // Iniciar sesión al principio del script
+    session_start();
 
-    // Configurar cookies de sesión
-    ini_set('session.cookie_secure', '1');
-    ini_set('session.cookie_httponly', '1');
-    ini_set('session.cookie_samesite', 'Lax');
-    ini_set('session.gc_maxlifetime', '1440');
+    // Agregar logs para debug
+    error_log("Iniciando proceso de login");
+    error_log("POST data: " . print_r($_POST, true));
 
     try {
         $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
         $documento = mysqli_real_escape_string($conexion, $_POST['documento']);
-
-        error_log("Intento de login - Correo: " . $correo);
 
         if ($correo && $documento) {
             $query = "SELECT * FROM usuario WHERE correo = ? AND documento = ?";
@@ -34,33 +28,67 @@
             if ($resultado->num_rows == 1) {
                 $usuario = $resultado->fetch_assoc();
                 
+                // Limpiar y reiniciar la sesión
+                session_unset();
+                session_destroy();
+                session_start();
+                
                 // Establecer variables de sesión
                 $_SESSION['usuario_id'] = $usuario['id'];
                 $_SESSION['nombre'] = $usuario['nombre'];
                 
-                error_log("Login exitoso - Usuario ID: " . $_SESSION['usuario_id']);
-                error_log("Login exitoso - Session ID: " . session_id());
-                
-                // Forzar la escritura de la sesión
+                // Forzar escritura de sesión
                 session_write_close();
                 
-                // Redirigir usando PHP header en lugar de JavaScript
-                header("Location: ../../index.php");
-                exit();
+                error_log("Login exitoso - Session ID: " . session_id());
+                error_log("Login exitoso - Usuario ID: " . $_SESSION['usuario_id']);
+                error_log("Login exitoso - Nombre: " . $_SESSION['nombre']);
+
+                ?>
+                <script>
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Bienvenido!',
+                        text: 'Inicio de sesión exitoso',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(function() {
+                        window.location = '../../index.php';
+                    });
+                </script>
+                <?php
             } else {
-                error_log("Login fallido - Credenciales incorrectas");
-                header("Location: ../../login.php?error=1");
-                exit();
+                ?>
+                <script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Correo o documento incorrectos'
+                    }).then(function() {
+                        window.location = '../../login.php';
+                    });
+                </script>
+                <?php
             }
         } else {
-            error_log("Login fallido - Campos vacíos");
-            header("Location: ../../login.php?error=2");
-            exit();
+            ?>
+            <script>
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Campos incompletos',
+                    text: 'Por favor, complete todos los campos'
+                }).then(function() {
+                    window.location = '../../index.php';
+                });
+            </script>
+            <?php
         }
     } catch (Exception $e) {
         error_log("Error en login: " . $e->getMessage());
-        header("Location: ../../login.php?error=3");
-        exit();
+        echo "<script>
+            alert('Error en el proceso de login');
+            window.location.href = '../../login.php';
+        </script>";
     }
 ?>
 </body>

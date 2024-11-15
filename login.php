@@ -28,9 +28,9 @@
                 <!-- Login -->
                 <form action="php/auth/ingreso_usuario.php" method="POST" class="formulario_login">
                     <h2>Iniciar Sesión</h2>
-                    <input type="email" name="correo" placeholder="Correo Electrónico" required>
-                    <input type="text" name="documento" placeholder="Documento" required>
-                    <button type="submit">Entrar</button>
+                    <input type="correo" placeholder="Correo Electrónico" name="correo">
+                    <input type="text" placeholder="Documento" name="documento">
+                    <button>Entrar</button>
                 </form>
                 <!-- Register -->
                 <form action="php/auth/registro_usuario_db.php" method="POST" class="formulario_register">
