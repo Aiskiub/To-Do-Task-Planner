@@ -21,6 +21,10 @@ services:
         fromDatabase:
           name: todo_db
           property: password
+      - key: PHP_SESSION_SAVE_HANDLER
+        value: files
+      - key: PHP_SESSION_SAVE_PATH
+        value: /var/lib/php/sessions
 
 databases:
   - name: todo_db

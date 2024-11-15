@@ -35,5 +35,13 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 # Expose port 80
 EXPOSE 80
 
+# Configurar sesiones de PHP
+RUN mkdir -p /var/lib/php/sessions \
+    && chown -R www-data:www-data /var/lib/php/sessions \
+    && chmod 1733 /var/lib/php/sessions
+
+# Copiar configuración personalizada de PHP
+COPY php.ini /usr/local/etc/php/conf.d/custom.ini
+
 # Start Apache
 CMD ["apache2-foreground"]

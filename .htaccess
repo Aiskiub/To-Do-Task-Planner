@@ -6,3 +6,7 @@ RewriteRule ^(.*)$ index.php [QSA,L]
 php_value display_errors 1
 php_value display_startup_errors 1
 php_value error_reporting E_ALL 
+php_value session.cookie_secure On
+php_value session.cookie_httponly On
+php_value session.cookie_samesite "Lax"
+php_value session.gc_maxlifetime 1440 
