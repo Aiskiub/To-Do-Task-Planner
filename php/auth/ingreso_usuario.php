@@ -26,17 +26,23 @@
             if ($resultado->num_rows == 1) {
                 $usuario = $resultado->fetch_assoc();
                 
+                // Limpiar cualquier sesión existente
+                session_unset();
+                session_destroy();
+                session_start();
+                
                 // Establecer variables de sesión
                 $_SESSION['usuario_id'] = $usuario['id'];
                 $_SESSION['nombre'] = $usuario['nombre'];
                 
-                // Verificar que las variables de sesión se establecieron
-                error_log("Session ID: " . session_id());
-                error_log("Usuario ID: " . $_SESSION['usuario_id']);
-                error_log("Nombre: " . $_SESSION['nombre']);
-
                 // Forzar la escritura de la sesión
                 session_write_close();
+                session_start();
+                
+                // Verificar que las variables de sesión se establecieron
+                error_log("Login exitoso - Session ID: " . session_id());
+                error_log("Login exitoso - Usuario ID: " . $_SESSION['usuario_id']);
+                error_log("Login exitoso - Nombre: " . $_SESSION['nombre']);
 
                 ?>
                 <script>
