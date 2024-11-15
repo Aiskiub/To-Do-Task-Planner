@@ -1,17 +1,29 @@
 services:
   - type: web
     name: todo-task-planner
-    env: php
-    buildCommand: composer install
-    startCommand: heroku-php-apache2
+    env: docker
+    buildCommand: docker build -t todo-app .
+    startCommand: docker run -p $PORT:80 todo-app
     envVars:
-      - key: DATABASE_URL
+      - key: MYSQL_HOST
         fromDatabase:
           name: todo_db
-          property: connectionString
+          property: host
+      - key: MYSQL_DATABASE
+        fromDatabase:
+          name: todo_db
+          property: database
+      - key: MYSQL_USER
+        fromDatabase:
+          name: todo_db
+          property: user
+      - key: MYSQL_PASSWORD
+        fromDatabase:
+          name: todo_db
+          property: password
 
 databases:
   - name: todo_db
-    databaseName: to_do_db
-    user: root
+    databaseName: bklh49kulsoolhk6uayw
+    user: u4j93xe2z4ovjypf
     plan: free 
