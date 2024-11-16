@@ -32,6 +32,11 @@ $_SESSION['correo'] = $usuario['correo'];
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
+    <header class="main-header">
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+    </header>
     <script>
         // birnvenidida
         Swal.fire({
@@ -295,5 +300,7 @@ $_SESSION['correo'] = $usuario['correo'];
             setupDragAndDrop();
         });
     </script>
+    <script src="./assets/js/mobile-menu.js"></script>
+    <script src="./assets/js/task-details.js"></script>
 </body>
 </html>
