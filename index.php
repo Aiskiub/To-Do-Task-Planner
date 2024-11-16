@@ -1,26 +1,16 @@
 <?php
 require_once 'php/config/config.php';
 
-// Asegurarse de que la sesión está iniciada
+// Mantener el inicio de sesión sin validación
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-error_log("Debug - Session status: " . session_status());
-error_log("Debug - Session ID: " . session_id());
-error_log("Debug - Session data: " . print_r($_SESSION, true));
-
-// Verificar la sesión y registrar información
-error_log("Session check - ID: " . session_id());
-error_log("Session check - usuario_id: " . ($_SESSION['usuario_id'] ?? 'no set'));
-
-// Verificar si el usuario está autenticado
-if (!isset($_SESSION['usuario_id'])) {
-    error_log("Usuario no autenticado - redirigiendo a login");
-    header('Location: login.php');
-    exit;
-}
-
+// Remover toda la lógica de verificación
+// if (!isset($_SESSION['usuario_id'])) {
+//     header('Location: login.php');
+//     exit;
+// }
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -36,14 +26,7 @@ if (!isset($_SESSION['usuario_id'])) {
     <div class="container">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
-            <h2 class="Login-button">
-            <?php if(isset($_SESSION['nombre'])): ?>
-                <span>Bienvenido, <?php echo htmlspecialchars($_SESSION['nombre']); ?> | </span>
-                <a href="php/auth/cerrar_sesion.php">Cerrar Sesión</a>
-            <?php else: ?>
-                <a href="login.php" class="login-button">Iniciar Sesión</a>
-            <?php endif; ?>
-        </h2>
+            <h2>Task Manager</h2>
             <p>Free Plan</p>
             <nav>
                 <div class="nav-item" id="myDay">
