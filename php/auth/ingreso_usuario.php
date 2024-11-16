@@ -4,24 +4,72 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-<?php
-    include '../config/conexion_db.php';
     
+<?php
+    if (session_status() === PHP_SESSION_NONE) {
+        // configurar opciones de sesion antes de iniciarla
+        ini_set('session.cookie_secure', '1');
+        ini_set('session.cookie_httponly', '1');
+        ini_set('session.cookie_samesite', 'Lax');
+        ini_set('session.cookie_lifetime', '86400');
+        
+        session_start();
+        
+        // configurar la cookie de sesion especificamente para HTTPS
+        $cookieParams = session_get_cookie_params();
+        setcookie(session_name(), session_id(), [
+            'expires' => time() + 86400,
+            'path' => '/',
+            'domain' => $_SERVER['HTTP_HOST'],
+            'secure' => true,     // Forzar HTTPS
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+        
+        // Agregar logs para debugging
+        error_log('Session started - ID: ' . session_id());
+        error_log('Cookie params: ' . print_r(session_get_cookie_params(), true));
+        error_log('Server HTTPS: ' . ($_SERVER['HTTPS'] ?? 'off'));
+        error_log('Server HTTP_HOST: ' . $_SERVER['HTTP_HOST']);
+    }
+    include '../config/conexion_db.php';
+
+    // Agregar logs para debug
+    error_log("Iniciando proceso de login");
+    error_log("POST data: " . print_r($_POST, true));
+
+    try {
         $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
         $documento = mysqli_real_escape_string($conexion, $_POST['documento']);
 
         if ($correo && $documento) {
-            $query = "SELECT * FROM usuario WHERE correo = '$correo' AND documento = '$documento'";
-            $resultado = mysqli_query($conexion, $query);
+            $query = "SELECT * FROM usuario WHERE correo = ? AND documento = ?";
+            $stmt = $conexion->prepare($query);
+            $stmt->bind_param("ss", $correo, $documento);
+            $stmt->execute();
+            $resultado = $stmt->get_result();
 
-            if (mysqli_num_rows($resultado) == 1) {
+            if ($resultado->num_rows == 1) {
+                $usuario = $resultado->fetch_assoc();
+                
+                // limpiar y reiniciar la sesion
+                session_unset();
+                session_destroy();
+                session_start();
+                
+                // establecer variables de sesion
+                $_SESSION['usuario_id'] = $usuario['id'];
+                $_SESSION['nombre'] = $usuario['nombre'];
+                
+                // forzar escritura de sesion
+                session_write_close();
                 ?>
                 <script>
                     Swal.fire({
                         icon: 'success',
                         title: '¡Bienvenido!',
                         text: 'Inicio de sesión exitoso',
-                        timer: 1500,
+                        timer: 2000,
                         showConfirmButton: false
                     }).then(function() {
                         window.location = '../../index.php';
@@ -41,7 +89,32 @@
                 </script>
                 <?php
             }
+        } else {
+            ?>
+            <script>
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Campos incompletos',
+                    text: 'Por favor, complete todos los campos'
+                }).then(function() {
+                    window.location = '../../index.php';
+                });
+            </script>
+            <?php
         }
+    } catch (Exception $e) {
+        error_log("Error en login: " . $e->getMessage());
+        echo "<script>
+            alert('Error en el proceso de login');
+            window.location.href = '../../login.php';
+        </script>";
+    }
+
+    // Configurar parámetros de cookies
+    ini_set('session.cookie_lifetime', '86400');
+    ini_set('session.gc_maxlifetime', '86400');
+    session_start();
+
 ?>
 </body>
 </html>

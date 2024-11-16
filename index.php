@@ -1,5 +1,16 @@
 <?php
 require_once 'php/config/config.php';
+
+// Asegurarse de que la sesión está iniciada
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (!isset($_SESSION['usuario_id'])) {
+    error_log("Usuario no autenticado - redirigiendo a login");
+    header('Location: login.php');
+    exit;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
