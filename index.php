@@ -1,22 +1,11 @@
 <?php
 require_once 'php/config/config.php';
 
-// Asegurarse de que la sesión está iniciada
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-error_log("Debug - Session status: " . session_status());
-error_log("Debug - Session ID: " . session_id());
-error_log("Debug - Session data: " . print_r($_SESSION, true));
-
-// Verificar la sesión y registrar información
-error_log("Session check - ID: " . session_id());
-error_log("Session check - usuario_id: " . ($_SESSION['usuario_id'] ?? 'no set'));
+// Iniciar sesión de manera simple
+session_start();
 
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION['usuario_id'])) {
-    error_log("Usuario no autenticado - redirigiendo a login");
     header('Location: login.php');
     exit;
 }
