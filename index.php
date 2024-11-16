@@ -1,16 +1,24 @@
 <?php
 require_once 'php/config/config.php';
 
-// Mantener el inicio de sesión sin validación
+// Iniciar sesión si no está iniciada
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Remover toda la lógica de verificación
-// if (!isset($_SESSION['usuario_id'])) {
-//     header('Location: login.php');
-//     exit;
-// }
+// Conectar con la base de datos
+require_once 'php/config/conexion_db.php';
+
+// Siempre cargar el usuario con ID 1
+$query = "SELECT id, nombre, correo FROM usuario WHERE id = 1";
+$result = $conexion->query($query);
+$usuario = $result->fetch_assoc();
+
+// Establecer la sesión con los datos del usuario
+$_SESSION['usuario_id'] = $usuario['id'];
+$_SESSION['nombre'] = $usuario['nombre'];
+$_SESSION['correo'] = $usuario['correo'];
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -21,13 +29,28 @@ if (session_status() === PHP_SESSION_NONE) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="./assets/css/main.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
+    <script>
+        // birnvenidida
+        Swal.fire({
+            title: '¡Bienvenido!',
+            text: 'Hola, <?php echo $_SESSION['nombre']; ?>',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false
+        });
+    </script>
+
     <div class="container">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
-            <h2>Task Manager</h2>
-            <p>Free Plan</p>
+            <div class="user-info">
+                <h2>Task Manager</h2>
+                <p>Bienvenido, <?php echo $_SESSION['nombre']; ?></p>
+                <p>Free Plan</p>
+            </div>
             <nav>
                 <div class="nav-item" id="myDay">
                     <i class="fas fa-sun"></i> My Day
